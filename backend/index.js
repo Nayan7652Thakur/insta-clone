@@ -30,6 +30,6 @@ app.use(cors(corsOption))
 
 
 app.listen(PORT, () =>{
-    connectDB()
+ connectDB()
     console.log(`server listen at post ${PORT}`);
 })

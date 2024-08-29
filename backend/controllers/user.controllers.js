@@ -71,7 +71,7 @@ export const login = async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '31d' });
 
         return res.cookie('token', token, {
             httpOnly: true,
@@ -118,7 +118,21 @@ export const getProfile = async (req, res) => {
         const userId = req.params.id;
         let user = await User.findById(userId)
 
+        return res.status(200).json({
+            user,
+            success: true
+        })
     } catch (error) {
         console.log(error);
     }
 }
+
+export const editProfile = async (req, res) =>{{
+
+try {
+     const userId = req.id
+} catch (error) {
+    console.log(error);
+}
+
+}}
