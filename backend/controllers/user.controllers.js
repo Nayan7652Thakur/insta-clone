@@ -131,6 +131,14 @@ export const editProfile = async (req, res) =>{{
 
 try {
      const userId = req.id
+     const {bio , gender} = req.body;
+     const profilePicture = req.file;
+     let cloudResponse;
+
+   if (profilePicture) {
+    
+   }
+
 } catch (error) {
     console.log(error);
 }
