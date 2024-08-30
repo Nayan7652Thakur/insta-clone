@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import cloudinary from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
     const { username, email, password } = req.body;
@@ -127,20 +128,111 @@ export const getProfile = async (req, res) => {
     }
 }
 
-export const editProfile = async (req, res) =>{{
+export const editProfile = async (req, res) => {
+    {
 
-try {
-     const userId = req.id
-     const {bio , gender} = req.body;
-     const profilePicture = req.file;
-     let cloudResponse;
+        try {
+            const userId = req.id
+            const { bio, gender } = req.body;
+            const profilePicture = req.file;
+            let cloudResponse;
 
-   if (profilePicture) {
-    
-   }
+            if (profilePicture) {
+                const fileuri = getDataUri(profilePicture)
+                cloudResponse = await cloudinary.uploader.upload(fileuri)
+            }
 
-} catch (error) {
-    console.log(error);
+
+            const user = await User.findByIdId(userId)
+
+            if (!user) {
+                return res.status(404).json({
+                    message: 'User not found',
+                    success: false
+                })
+            }
+
+            if (bio) user.bio = bio;
+            if (gender) user.gender = gender;
+            if (profilePicture) user.profilePicture = cloudResponse.secure_url
+
+            await user.save()
+
+            return res.status(200).json({
+                message: 'profile update',
+                success: true,
+                user
+            })
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
 }
 
-}}
+export const getSuggestedUsers = async (req, res) => {
+    try {
+        const suggestedUsers = await User.find({ _id: { $ne: req.id } }).select("-password");
+
+        if (!suggestedUsers || suggestedUsers.length === 0) {
+            return res.status(400).json({
+                message: 'Currently, there are no users',
+                success: true
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            users: suggestedUsers
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error", success: false });
+    }
+};
+
+
+export const followOrUnfollow = async (req, res) => {
+    try {
+        const followKrneWala = req.id;
+        const jiskoFollowKrunga = req.params.id;
+
+        if (followKrneWala === jiskoFollowKrunga) {
+            return res.status(400).json({
+                message: 'You cannot follow/unfollow yourself',
+                success: false
+            });
+        }
+
+        const user = await User.findById(followKrneWala);
+        const targetUser = await User.findById(jiskoFollowKrunga);
+
+        if (!user || !targetUser) {
+            return res.status(400).json({
+                message: 'User not found',
+                success: false
+            });
+        }
+
+        const isFollowing = user.following.includes(jiskoFollowKrunga);
+        if (isFollowing) {
+            await Promise.all([
+                User.updateOne({ _id: followKrneWala }, { $pull: { following: jiskoFollowKrunga } }),
+                User.updateOne({ _id: jiskoFollowKrunga }, { $pull: { followers: followKrneWala } })
+            ]);
+            return res.status(200).json({ message: 'Unfollowed', success: true });
+        } else {
+            await Promise.all([
+                User.updateOne({ _id: followKrneWala }, { $push: { following: jiskoFollowKrunga } }),
+                User.updateOne({ _id: jiskoFollowKrunga }, { $push: { followers: followKrneWala } })
+            ]);
+            return res.status(200).json({ message: 'Followed', success: true });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error", success: false });
+    }
+};
