@@ -3,7 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import connectDB from './utils/db.js'
-import router from './routes/user.route.js'
+import userRouter from './routes/user.route.js'
 
 dotenv.config({})
 
@@ -33,7 +33,7 @@ const corsOption = {
 app.use(cors(corsOption))
 
 
-app.use('api/v1/user', router)
+app.use("api/v1/user", userRouter)
 
 app.listen(PORT, () =>{
  connectDB()
