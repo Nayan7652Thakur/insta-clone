@@ -107,16 +107,36 @@ export const getUserPost = async (req, res) => {
     }
 };
 
+export const likePost = async (req, res) => {
+    try {
+        const userId = req.id;
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-export const likePost = async (req, res) =>{
-try {
-    const likeKarneWalaUserKiId = req.id;
-    const postId = req.params.id;
-    const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ message: 'Post not found', success:false })
-    
-    
-} catch (error) {
-    console.log(error);
-}
-}
+        await post.updateOne({ $addToSet: { likes: userId } });
+
+        return res.status(200).json({ message: 'Post liked', success: true });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error', success: false });
+    }
+};
+
+export const disLikePost = async (req, res) => {
+    try {
+        const userId = req.id;
+        const postId = req.params.id;
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ message: 'Post not found', success: false });
+
+        await post.updateOne({ $pull: { likes: userId } });
+
+        return res.status(200).json({ message: 'Post disliked', success: true });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error', success: false });
+    }
+};
