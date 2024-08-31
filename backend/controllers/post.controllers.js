@@ -2,6 +2,7 @@ import sharp from 'sharp';
 import cloudinary from '../utils/cloudinary';
 import { Post } from '../models/post.model.js';
 import { User } from '../models/user.model.js';
+import { Comment } from '../models/comment.model.js'; // Import your Comment model
 
 export const addNewPost = async (req, res) => {
     try {
@@ -138,5 +139,44 @@ export const disLikePost = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Server error', success: false });
+    }
+};
+
+export const addComment = async (req, res) => {
+    try {
+        const postId = req.body.postId;
+        const commentKrneWaleUserKiId = req.id; // Get the user ID from the authenticated user
+        const { text } = req.body;
+
+        if (!text) return res.status(400).json({ message: 'Text is required', success: false });
+
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ message: 'Post not found', success: false });
+
+        const comment = await Comment.create({
+            text,
+            author: commentKrneWaleUserKiId,
+            post: postId
+        });
+
+        post.comments.push(comment._id);
+        await post.save();
+
+        await comment.populate({
+            path: 'author',
+            select: 'username profilePicture'
+        });
+
+        return res.status(201).json({
+            message: 'Comment added',
+            comment,
+            success: true
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
     }
 };
