@@ -2,12 +2,14 @@ import { User } from "../models/user.model.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import cloudinary from "../utils/cloudinary.js";
+import getDataUri from "../utils/datauri.js";
+
 
 export const register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { userName, email, password } = req.body;  // Use userName here
 
     try {
-        if (!username || !email || !password) {
+        if (!userName || !email || !password) {  // Check userName
             return res.status(400).json({
                 message: "All fields are required",
                 success: false
@@ -24,7 +26,7 @@ export const register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         await User.create({
-            username,
+            userName,   // Use userName here
             email,
             password: hashedPassword
         });
@@ -42,6 +44,7 @@ export const register = async (req, res) => {
         });
     }
 };
+
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
@@ -77,13 +80,13 @@ export const login = async (req, res) => {
         return res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'strict',
-            maxAge: 31 * 24 * 60 * 1000
+            maxAge: 31 * 24 * 60 * 60 * 1000  // Set to milliseconds
         }).json({
-            message: `Welcome back, ${user.username}`,
+            message: `Welcome back, ${user.userName}`,  // Use user.userName if schema uses userName
             success: true,
             user: {
                 _id: user._id,
-                username: user.username,
+                userName: user.userName,  // Ensure this matches schema
                 email: user.email,
                 profilePicture: user.profilePicture,
                 bio: user.bio,
@@ -117,60 +120,70 @@ export const logout = async (_, res) => {
 export const getProfile = async (req, res) => {
     try {
         const userId = req.params.id;
-        let user = await User.findById(userId)
+        // Correctly exclude the 'password' field
+        const user = await User.findById(userId).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found',
+                success: false
+            });
+        }
 
         return res.status(200).json({
             user,
             success: true
-        })
+        });
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
     }
-}
+};
 
 export const editProfile = async (req, res) => {
-    {
+    try {
+        const userId = req.id;
+        const { bio, gender } = req.body;
+        const profilePicture = req.file;
+        let cloudResponse;
 
-        try {
-            const userId = req.id
-            const { bio, gender } = req.body;
-            const profilePicture = req.file;
-            let cloudResponse;
-
-            if (profilePicture) {
-                const fileuri = getDataUri(profilePicture)
-                cloudResponse = await cloudinary.uploader.upload(fileuri)
-            }
-
-
-            const user = await User.findByIdId(userId)
-
-            if (!user) {
-                return res.status(404).json({
-                    message: 'User not found',
-                    success: false
-                })
-            }
-
-            if (bio) user.bio = bio;
-            if (gender) user.gender = gender;
-            if (profilePicture) user.profilePicture = cloudResponse.secure_url
-
-            await user.save()
-
-            return res.status(200).json({
-                message: 'profile update',
-                success: true,
-                user
-            })
-
-
-        } catch (error) {
-            console.log(error);
+        if (profilePicture) {
+            const fileUri = getDataUri(profilePicture);
+            cloudResponse = await cloudinary.uploader.upload(fileUri);
         }
 
+        const user = await User.findById(userId).select("-password") // Corrected method name
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found',
+                success: false
+            });
+        }
+
+        if (bio) user.bio = bio;
+        if (gender) user.gender = gender;
+        if (profilePicture) user.profilePicture = cloudResponse?.secure_url || ''; // Added nullish coalescing
+
+        await user.save();
+
+        return res.status(200).json({
+            message: 'Profile updated successfully',
+            success: true,
+            user
+        });
+
+    } catch (error) {
+        console.error(error); // Log the error
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
     }
-}
+};
 
 export const getSuggestedUsers = async (req, res) => {
     try {

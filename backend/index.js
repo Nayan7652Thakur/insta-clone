@@ -3,7 +3,9 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import connectDB from './utils/db.js'
-import userRouter from './routes/user.route.js'
+import userRoute from './routes/user.route.js';
+
+
 
 dotenv.config({})
 
@@ -16,7 +18,7 @@ const app = express()
 app.get("/", (req,res) => {
     return res.status(200).json({
         message:"Im' coming from backend",
-      success:true   
+        success:true   
     })
 })
 
@@ -33,9 +35,9 @@ const corsOption = {
 app.use(cors(corsOption))
 
 
-app.use("api/v1/user", userRouter)
+app.use('/api/v2/user', userRoute);
 
 app.listen(PORT, () =>{
- connectDB()
+    connectDB()
     console.log(`server listen at post ${PORT}`);
 })
