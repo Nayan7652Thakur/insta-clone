@@ -40,7 +40,7 @@ export const addNewPost = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
             message: 'Server error',
             success: false
@@ -49,10 +49,74 @@ export const addNewPost = async (req, res) => {
 };
 
 export const getAllPost = async (req, res) => {
-
     try {
-        const post = await Post.find().sort({ createdAt: -1 }).populate(({ path: 'author', select: 'username, profilePicture' }))
+        const posts = await Post.find()
+            .sort({ createdAt: -1 })
+            .populate({ path: 'author', select: 'username profilePicture' })
+            .populate({
+                path: 'comments',
+                options: { sort: { createdAt: -1 } },
+                populate: {
+                    path: 'author',
+                    select: 'username profilePicture'
+                }
+            });
+
+        return res.status(200).json({
+            posts,
+            success: true
+        });
+
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
     }
+};
+
+export const getUserPost = async (req, res) => {
+    try {
+        const authorId = req.id;
+        const posts = await Post.find({ author: authorId })
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'author',
+                select: 'username profilePicture'
+            })
+            .populate({
+                path: 'comments',
+                options: { sort: { createdAt: -1 } },
+                populate: {
+                    path: 'author',
+                    select: 'username profilePicture'
+                }
+            });
+
+        return res.status(200).json({
+            posts,
+            success: true
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
+    }
+};
+
+
+export const likePost = async (req, res) =>{
+try {
+    const likeKarneWalaUserKiId = req.id;
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: 'Post not found', success:false })
+    
+    
+} catch (error) {
+    console.log(error);
+}
 }
