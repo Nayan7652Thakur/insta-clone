@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import cloudinary from '../utils/cloudinary';
+import cloudinary from '../utils/cloudinary.js';
 import { Post } from '../models/post.model.js';
 import { User } from '../models/user.model.js';
 import { Comment } from '../models/comment.model.js'; // Import your Comment model
@@ -234,12 +234,27 @@ export const deletePost = async (req, res) => {
 
 
 
-export const bookMarkPost = async() =>{
+export const bookMarkPost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const authorId = req.id;
 
-try {
-    
-} catch (error) {
-    console.log(error);
-}
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ message: 'Post not found', success: false });
 
-}
+        const user = await User.findById(authorId);
+        if (!user) return res.status(404).json({ message: 'User not found', success: false });
+
+        if (user.bookmarks.includes(post._id)) {
+            await user.updateOne({ $pull: { bookmarks: post._id } });
+            return res.status(200).json({ type: 'unsaved', message: 'Post removed from bookmarks', success: true });
+        } else {
+            await user.updateOne({ $addToSet: { bookmarks: post._id } });
+            return res.status(200).json({ type: 'saved', message: 'Post bookmarked', success: true });
+        }
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error', success: false });
+    }
+};

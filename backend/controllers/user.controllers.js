@@ -1,23 +1,24 @@
 import { User } from "../models/user.model.js";
+import { Post } from "../models/post.model.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import cloudinary from "../utils/cloudinary.js";
 import getDataUri from "../utils/datauri.js";
 
-
+// Register User
 export const register = async (req, res) => {
-    const { userName, email, password } = req.body;  // Use userName here
+    const { userName, email, password } = req.body;
 
     try {
-        if (!userName || !email || !password) {  // Check userName
+        if (!userName || !email || !password) {
             return res.status(400).json({
                 message: "All fields are required",
                 success: false
             });
         }
 
-        const user = await User.findOne({ email });
-        if (user) {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
             return res.status(400).json({
                 message: "Email is already in use. Try a different email.",
                 success: false
@@ -26,7 +27,7 @@ export const register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         await User.create({
-            userName,   // Use userName here
+            userName,
             email,
             password: hashedPassword
         });
@@ -45,7 +46,7 @@ export const register = async (req, res) => {
     }
 };
 
-
+// Login User
 export const login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -80,13 +81,14 @@ export const login = async (req, res) => {
         return res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'strict',
-            maxAge: 31 * 24 * 60 * 60 * 1000  // Set to milliseconds
+            secure: process.env.NODE_ENV === 'production', // Set secure flag if in production
+            maxAge: 31 * 24 * 60 * 60 * 1000  // 31 days in milliseconds
         }).json({
-            message: `Welcome back, ${user.userName}`,  // Use user.userName if schema uses userName
+            message: `Welcome back, ${user.userName}`,
             success: true,
             user: {
                 _id: user._id,
-                userName: user.userName,  // Ensure this matches schema
+                userName: user.userName,
                 email: user.email,
                 profilePicture: user.profilePicture,
                 bio: user.bio,
@@ -105,22 +107,26 @@ export const login = async (req, res) => {
     }
 };
 
-
+// Logout User
 export const logout = async (_, res) => {
     try {
         return res.cookie("token", "", { maxAge: 0 }).json({
-            message: 'user logout',
+            message: 'User logged out',
             success: true
-        })
+        });
     } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            message: 'Server error',
+            success: false
+        });
     }
-}
+};
 
+// Get User Profile
 export const getProfile = async (req, res) => {
     try {
         const userId = req.params.id;
-        // Correctly exclude the 'password' field
         const user = await User.findById(userId).select('-password');
 
         if (!user) {
@@ -143,6 +149,7 @@ export const getProfile = async (req, res) => {
     }
 };
 
+// Edit User Profile
 export const editProfile = async (req, res) => {
     try {
         const userId = req.id;
@@ -155,7 +162,7 @@ export const editProfile = async (req, res) => {
             cloudResponse = await cloudinary.uploader.upload(fileUri);
         }
 
-        const user = await User.findById(userId).select("-password") // Corrected method name
+        const user = await User.findById(userId).select("-password");
 
         if (!user) {
             return res.status(404).json({
@@ -166,7 +173,7 @@ export const editProfile = async (req, res) => {
 
         if (bio) user.bio = bio;
         if (gender) user.gender = gender;
-        if (profilePicture) user.profilePicture = cloudResponse?.secure_url || ''; // Added nullish coalescing
+        if (profilePicture) user.profilePicture = cloudResponse?.secure_url || '';
 
         await user.save();
 
@@ -177,7 +184,7 @@ export const editProfile = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error); // Log the error
+        console.error(error);
         return res.status(500).json({
             message: 'Server error',
             success: false
@@ -185,6 +192,7 @@ export const editProfile = async (req, res) => {
     }
 };
 
+// Get Suggested Users
 export const getSuggestedUsers = async (req, res) => {
     try {
         const suggestedUsers = await User.find({ _id: { $ne: req.id } }).select("-password");
@@ -203,25 +211,28 @@ export const getSuggestedUsers = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: "Server error", success: false });
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
     }
 };
 
-
+// Follow or Unfollow User
 export const followOrUnfollow = async (req, res) => {
     try {
-        const followKrneWala = req.id;
-        const jiskoFollowKrunga = req.params.id;
+        const followerId = req.id;
+        const targetUserId = req.params.id;
 
-        if (followKrneWala === jiskoFollowKrunga) {
+        if (followerId === targetUserId) {
             return res.status(400).json({
                 message: 'You cannot follow/unfollow yourself',
                 success: false
             });
         }
 
-        const user = await User.findById(followKrneWala);
-        const targetUser = await User.findById(jiskoFollowKrunga);
+        const user = await User.findById(followerId);
+        const targetUser = await User.findById(targetUserId);
 
         if (!user || !targetUser) {
             return res.status(400).json({
@@ -230,22 +241,25 @@ export const followOrUnfollow = async (req, res) => {
             });
         }
 
-        const isFollowing = user.following.includes(jiskoFollowKrunga);
+        const isFollowing = user.following.includes(targetUserId);
         if (isFollowing) {
             await Promise.all([
-                User.updateOne({ _id: followKrneWala }, { $pull: { following: jiskoFollowKrunga } }),
-                User.updateOne({ _id: jiskoFollowKrunga }, { $pull: { followers: followKrneWala } })
+                User.updateOne({ _id: followerId }, { $pull: { following: targetUserId } }),
+                User.updateOne({ _id: targetUserId }, { $pull: { followers: followerId } })
             ]);
             return res.status(200).json({ message: 'Unfollowed', success: true });
         } else {
             await Promise.all([
-                User.updateOne({ _id: followKrneWala }, { $push: { following: jiskoFollowKrunga } }),
-                User.updateOne({ _id: jiskoFollowKrunga }, { $push: { followers: followKrneWala } })
+                User.updateOne({ _id: followerId }, { $push: { following: targetUserId } }),
+                User.updateOne({ _id: targetUserId }, { $push: { followers: followerId } })
             ]);
             return res.status(200).json({ message: 'Followed', success: true });
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: "Server error", success: false });
+        return res.status(500).json({
+            message: "Server error",
+            success: false
+        });
     }
 };
