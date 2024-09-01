@@ -180,3 +180,54 @@ export const addComment = async (req, res) => {
         });
     }
 };
+
+export const getCommentsOfPost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+
+        const comments = await Comment.find({ post: postId }).populate('author', 'username profilePicture');
+
+        if (comments.length === 0) return res.status(404).json({ message: 'No comments found for this post', success: false });
+
+        return res.status(200).json({ success: true, comments });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error', success: false });
+    }
+};
+
+
+export const deletePost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const authorId = req.id;
+
+        // Find the post by ID
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ message: 'Post not found', success: false });
+
+        // Check if the post author is the same as the user requesting the deletion
+        if (post.author.toString() !== authorId) {
+            return res.status(403).json({ message: 'Unauthorized', success: false });
+        }
+
+        // Delete the post
+        await Post.findByIdAndDelete(postId);
+
+        // Remove the post reference from the user's posts array
+        let user = await User.findById(authorId);
+        user.posts = user.posts.filter(id => id.toString() !== postId);
+        await user.save();
+
+        // Delete all comments related to the post
+        await Comment.deleteMany({ post: postId });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Post deleted successfully'
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error', success: false });
+    }
+};
