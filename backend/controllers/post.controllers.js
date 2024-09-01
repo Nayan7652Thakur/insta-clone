@@ -231,3 +231,15 @@ export const deletePost = async (req, res) => {
         return res.status(500).json({ message: 'Server error', success: false });
     }
 };
+
+
+
+export const bookMarkPost = async() =>{
+
+try {
+    
+} catch (error) {
+    console.log(error);
+}
+
+}
