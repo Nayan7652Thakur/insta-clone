@@ -9,6 +9,8 @@ import getDataUri from "../utils/datauri.js";
 export const register = async (req, res) => {
     const { userName, email, password } = req.body;
 
+    console.log('Request Body:', req.body); // Add this line for debugging
+
     try {
         if (!userName || !email || !password) {
             return res.status(400).json({
@@ -45,6 +47,7 @@ export const register = async (req, res) => {
         });
     }
 };
+
 
 // Login User
 export const login = async (req, res) => {
