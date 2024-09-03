@@ -4,9 +4,8 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 
-const Signup = () => {
+const Login = () => {
     const [input, setInput] = useState({
-        userName: '', // Use `userName` to match the backend
         email: '',
         password: ''
     });
@@ -32,7 +31,7 @@ const Signup = () => {
 
         try {
             setLoading(true)
-            const res = await fetch('http://localhost:8000/api/v2/user/register', {
+            const res = await fetch('http://localhost:8000/api/v2/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -47,7 +46,6 @@ const Signup = () => {
                 toast.success(data.message);
 
                 setInput({
-                    userName: '', // Use `userName` to match the backend
                     email: '',
                     password: ''
                 })
@@ -71,30 +69,27 @@ const Signup = () => {
                     <h1 className='text-center font-bold text-xl'>
                         LOGO
                     </h1>
-                    <p className='text-sm text-center'>Signup to see photos & videos from friends</p>
+                    <p className='text-sm text-center'>Login to see photos & videos from friends</p>
                 </div>
-                <div>
-                    <span className='font-medium'>
-                        Username
-                    </span>
-                    <Input type='text' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='userName' />
-                </div>
+
                 <div>
                     <span className='font-medium'>
                         Email
                     </span>
                     <Input type='email' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='email' />
                 </div>
+
                 <div>
                     <span className='font-medium'>
                         Password
                     </span>
                     <Input type='password' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='password' />
                 </div>
-                <Button>Signup</Button>
+
+                <Button>Login</Button>
             </form>
         </div>
     );
 };
 
-export default Signup;
+export default Login;
