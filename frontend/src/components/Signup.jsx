@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
+import { Link, useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 const Signup = () => {
     const [input, setInput] = useState({
@@ -12,7 +14,7 @@ const Signup = () => {
     });
 
     const [loading, setLoading] = useState(false)
-
+    const navigate = useNavigate()
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
@@ -44,6 +46,8 @@ const Signup = () => {
             const data = await res.json();
 
             if (res.ok) {
+
+                navigate("/")
                 toast.success(data.message);
 
                 setInput({
@@ -91,7 +95,23 @@ const Signup = () => {
                     </span>
                     <Input type='password' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='password' />
                 </div>
-                <Button>Signup</Button>
+
+                {
+                    loading ? (
+                        <Button>
+                            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                            please wait...
+                        </Button>
+                    ) : (
+                        <Button>Signup</Button>
+                    )
+                }
+
+
+
+                <span className='text-center'>Already have an account?
+                    <Link className='text-blue-600' to='/login'>Login</Link>
+                </span>
             </form>
         </div>
     );

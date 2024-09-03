@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
+import { Link, useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 const Login = () => {
     const [input, setInput] = useState({
@@ -12,19 +14,20 @@ const Login = () => {
 
     const [loading, setLoading] = useState(false)
 
+    const navigate = useNavigate()
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
     };
 
-    const signupHandler = async (e) => {
+    const loginHandler = async (e) => { // Renamed to loginHandler for clarity
         e.preventDefault();
 
         // Log input data to check
         console.log('Input Data:', input);
 
         // Simple validation to ensure inputs are not empty
-        if (!input.userName || !input.email || !input.password) {
+        if (!input.email || !input.password) { // Removed userName check
             toast.error('Please fill out all fields');
             return;
         }
@@ -37,18 +40,21 @@ const Login = () => {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: JSON.stringify(input) // Ensure this matches the backend's expected format
+                body: JSON.stringify(input)
             });
 
             const data = await res.json();
 
             if (res.ok) {
+
+                navigate('/')
+
                 toast.success(data.message);
 
                 setInput({
                     email: '',
                     password: ''
-                })
+                });
 
             } else {
                 toast.error(data.message);
@@ -58,13 +64,13 @@ const Login = () => {
             console.log(error);
             toast.error('An error occurred. Please try again.');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
-            <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8'>
+            <form onSubmit={loginHandler} className='shadow-lg flex flex-col gap-5 p-8'>
                 <div className='my-4'>
                     <h1 className='text-center font-bold text-xl'>
                         LOGO
@@ -86,7 +92,20 @@ const Login = () => {
                     <Input type='password' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='password' />
                 </div>
 
-                <Button>Login</Button>
+                {
+                    loading ? (
+                        <Button>
+                            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                            Checking email & password
+                        </Button>
+                    ) : (
+                        <Button>Login</Button>
+                    )
+                }
+
+                <span className='text-center'>Don't have an account?
+                    <Link className='text-blue-600' to='/signup'> Signup</Link> {/* Updated link text */}
+                </span>
             </form>
         </div>
     );
