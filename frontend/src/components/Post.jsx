@@ -9,7 +9,7 @@ import CommentDialog from './CommentDialog'
 const Post = () => {
 
 const [text, setText] = useState("")
-
+const [open, setOpen] = useState(false)
 
 const changeEventHandler = (e) => {
 const inputText = e.target.value;
@@ -59,7 +59,7 @@ if (inputText.trim()) {
                 <div className='flex items-center justify-between my-2'>
                     <div className='flex items-center gap-3'>
                         <FaRegHeart size={'22px'} className='cursor-pointer hover:text-gray-600'/>
-                        <MessageCircle className='cursor-pointer hover:text-gray-600' />
+                        <MessageCircle className='cursor-pointer hover:text-gray-600' onClick={() => setOpen(true)}/>
                         <Send className='cursor-pointer hover:text-gray-600'/>
                     </div>
                     <Bookmark className='cursor-pointer hover:text-gray-600'/>
@@ -74,8 +74,8 @@ if (inputText.trim()) {
                     caption
                 </span>
                </p>
-               <span>view all 10 comments</span>
-               <CommentDialog />
+               <span onClick={() => setOpen(true)}>view all 10 comments</span>
+               <CommentDialog open={open} setOpen={setOpen}/>
                <div className='flex items-center justify-between'>
                 <input type="text"
                  placeholder='Add a comment...'
