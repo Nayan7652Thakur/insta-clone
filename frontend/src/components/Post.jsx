@@ -74,7 +74,7 @@ if (inputText.trim()) {
                     caption
                 </span>
                </p>
-               <span onClick={() => setOpen(true)}>view all 10 comments</span>
+               <span onClick={() => setOpen(true)} className='cursor-pointer text-sm text-gray-400'>view all 10 comments</span>
                <CommentDialog open={open} setOpen={setOpen}/>
                <div className='flex items-center justify-between'>
                 <input type="text"
