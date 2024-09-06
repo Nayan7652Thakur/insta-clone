@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
+import { setAuthUser } from '@/redux/authSlice';
 
 const Login = () => {
     const [input, setInput] = useState({
@@ -13,29 +14,26 @@ const Login = () => {
         password: ''
     });
 
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
     };
 
-    const loginHandler = async (e) => { // Renamed to loginHandler for clarity
+    const loginHandler = async (e) => {
         e.preventDefault();
 
-        // Log input data to check
-        console.log('Input Data:', input);
-
-        // Simple validation to ensure inputs are not empty
-        if (!input.email || !input.password) { // Removed userName check
+        // Ensure inputs are not empty
+        if (!input.email || !input.password) {
             toast.error('Please fill out all fields');
             return;
         }
 
         try {
-            setLoading(true)
+            setLoading(true);
             const res = await fetch('http://localhost:8000/api/v2/user/login', {
                 method: 'POST',
                 headers: {
@@ -48,16 +46,13 @@ const Login = () => {
             const data = await res.json();
 
             if (res.ok) {
-
-                navigate('/')
-
+                dispatch(setAuthUser(data.user)); // Correct dispatch with 'data.user'
+                navigate('/');
                 toast.success(data.message);
-
                 setInput({
                     email: '',
                     password: ''
                 });
-
             } else {
                 toast.error(data.message);
             }
@@ -84,29 +79,42 @@ const Login = () => {
                     <span className='font-medium'>
                         Email
                     </span>
-                    <Input type='email' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='email' />
+                    <Input 
+                        type='email' 
+                        name='email'
+                        value={input.email} // Bind value to state
+                        onChange={changeEventHandler} 
+                        className='focus-visible:ring-transparent my-2' 
+                    />
                 </div>
 
                 <div>
                     <span className='font-medium'>
                         Password
                     </span>
-                    <Input type='password' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='password' />
+                    <Input 
+                        type='password' 
+                        name='password'
+                        value={input.password} // Bind value to state
+                        onChange={changeEventHandler} 
+                        className='focus-visible:ring-transparent my-2' 
+                    />
                 </div>
 
                 {
                     loading ? (
-                        <Button>
+                        <Button disabled>
                             <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                             Checking email & password
                         </Button>
                     ) : (
-                        <Button>Login</Button>
+                        <Button type="submit">Login</Button>
                     )
                 }
 
-                <span className='text-center'>Don't have an account?
-                    <Link className='text-blue-600' to='/signup'> Signup</Link> {/* Updated link text */}
+                <span className='text-center'>
+                    Don't have an account? 
+                    <Link className='text-blue-600' to='/signup'> Signup</Link>
                 </span>
             </form>
         </div>
