@@ -5,23 +5,29 @@ import { Bookmark, MessageCircle, MoreHorizontal, Send } from 'lucide-react'
 import { Button } from './ui/button'
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from './CommentDialog'
+import { useSelector } from 'react-redux'
 
-const Post = () => {
+const Post = ({post}) => {
 
-const [text, setText] = useState("")
-const [open, setOpen] = useState(false)
+    const [text, setText] = useState("")
+    const [open, setOpen] = useState(false)
+    const { user } = useSelector((store) => store.auth);
 
-const changeEventHandler = (e) => {
-const inputText = e.target.value;
 
-if (inputText.trim()) {
-    setText(inputText)
-} else {
-    setText("")
-} 
- 
+console.log(user)
+console.log(user.username);
 
-}
+    const changeEventHandler = (e) => {
+        const inputText = e.target.value;
+
+        if (inputText.trim()) {
+            setText(inputText)
+        } else {
+            setText("")
+        }
+
+
+    }
 
 
     return (
@@ -29,12 +35,12 @@ if (inputText.trim()) {
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <Avatar>
-                        <AvatarImage src="" alt="post_image" />
+                        <AvatarImage src={postMessage.author?.profilePicture} alt="post_image" />
                         <AvatarFallback>
                             CN
                         </AvatarFallback>
                     </Avatar>
-                    <h1>Username</h1>
+                    <h1>{user.userName}</h1>
                 </div>
 
                 <Dialog>
@@ -54,42 +60,43 @@ if (inputText.trim()) {
                     </DialogContent>
                 </Dialog>
             </div>
-            <img src="https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg" alt="post_Image" className='rounded-sm my-2 w-full aspect-square object-cover' />
-           
-                <div className='flex items-center justify-between my-2'>
-                    <div className='flex items-center gap-3'>
-                        <FaRegHeart size={'22px'} className='cursor-pointer hover:text-gray-600'/>
-                        <MessageCircle className='cursor-pointer hover:text-gray-600' onClick={() => setOpen(true)}/>
-                        <Send className='cursor-pointer hover:text-gray-600'/>
-                    </div>
-                    <Bookmark className='cursor-pointer hover:text-gray-600'/>
-                </div>
-               <span className='font-medium block mb-2'>
-                1k Likes
-               </span>
-               
-               <p>
-                <span className='font-medium mr-2'>
-                    username
-                    caption
-                </span>
-               </p>
-               <span onClick={() => setOpen(true)} className='cursor-pointer text-sm text-gray-400'>view all 10 comments</span>
-               <CommentDialog open={open} setOpen={setOpen}/>
-               <div className='flex items-center justify-between'>
-                <input type="text"
-                 placeholder='Add a comment...'
-                 className='outline-none text-sm w-full'
-                 value={text}
-                 onChange={changeEventHandler}
-                 />
+            <img src={post.image} />
 
-   {
-    text &&  <span className='text-[#3BADF8]'>Post</span>
-   }
-                  
-                
-               </div>
+            <div className='flex items-center justify-between my-2'>
+                <div className='flex items-center gap-3'>
+                    <FaRegHeart size={'22px'} className='cursor-pointer hover:text-gray-600' />
+                    <MessageCircle className='cursor-pointer hover:text-gray-600' onClick={() => setOpen(true)} />
+                    <Send className='cursor-pointer hover:text-gray-600' />
+                </div>
+                <Bookmark className='cursor-pointer hover:text-gray-600' />
+            </div>
+            <span className='font-medium block mb-2'>
+               {post.likes.length}
+               likes
+            </span>
+
+            <p>
+                <span className='font-medium mr-2'>
+                   {user.userName}
+                </span>
+                    {post.caption}
+            </p>
+            <span onClick={() => setOpen(true)} className='cursor-pointer text-sm text-gray-400'>view all 10 comments</span>
+            <CommentDialog open={open} setOpen={setOpen} />
+            <div className='flex items-center justify-between'>
+                <input type="text"
+                    placeholder='Add a comment...'
+                    className='outline-none text-sm w-full'
+                    value={text}
+                    onChange={changeEventHandler}
+                />
+
+                {
+                    text && <span className='text-[#3BADF8]'>Post</span>
+                }
+
+
+            </div>
         </div>
     )
 }
