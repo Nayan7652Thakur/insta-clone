@@ -6,12 +6,14 @@ import { Toaster } from './components/ui/sonner.jsx'
 import { Provider } from 'react-redux'
 import store from './redux/store.js'
 import { PersistGate } from 'redux-persist/integration/react'
+import { persistStore } from 'redux-persist'
 
+let persistor = persistStore(store)  // Correct usage of `persistor`
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <PersistGate>
+      <PersistGate loading={null} persistor={persistor}>  {/* Pass the `persistor` variable here */}
         <App />
         <Toaster />
       </PersistGate>

@@ -1,15 +1,20 @@
 import { Heart, Home, LogOut, MessageCircle, PlusSquare, Search, TrendingUp } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import store from '@/redux/store';
+import { setAuthUser } from '@/redux/authSlice';
+import CreatePost from './CreatePost';
 
 
 const LeftSidebar = () => {
     const navigate = useNavigate();
     const { user } = useSelector(store => store.auth)
+    const dispatch = useDispatch()
+
+    const [open, setOpen] = useState(false)
 
 
     const logoutHandler = async () => {
@@ -20,6 +25,7 @@ const LeftSidebar = () => {
             });
 
             if (res.ok) {
+                dispatch(setAuthUser(null))
                 navigate('/login');
                 toast.success('Logged out successfully');
             } else {
@@ -30,16 +36,14 @@ const LeftSidebar = () => {
             toast.error('An error occurred. Please try again.');
         }
     };
-
+        
     const sidebarHandler = (textType) => {
         if (textType === 'Logout') {
             logoutHandler();
-        } else {
-            // Add navigation logic for other items if needed
-            console.log(textType);
+        } else if (textType === 'Create') {
+            setOpen(true)
         }
     };
-
 
     const sidebarItems = [
         { icon: <Home />, text: "Home" },
@@ -76,6 +80,7 @@ const LeftSidebar = () => {
                     ))}
                 </div>
             </div>
+            <CreatePost open={open} setOpen={setOpen}/>
         </div>
     );
 };
