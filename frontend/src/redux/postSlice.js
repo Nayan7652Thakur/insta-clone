@@ -10,8 +10,8 @@ const postSlice = createSlice({
         setPosts: (state, action) => {
             state.posts = action.payload; // Updates posts with new data
         },
-        setSelectedPost:(state, action) => {
-state.selectedPost = action.payload
+        setSelectedPost: (state, action) => {
+            state.selectedPost = action.payload
         }
     }
 });

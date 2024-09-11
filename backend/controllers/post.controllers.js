@@ -183,31 +183,35 @@ export const dislikePost = async (req, res) => {
 export const addComment = async (req, res) => {
     try {
         const postId = req.params.id;
-        const commentKrneWalaUserKiId = req.id;
+        const authorId = req.id; // Id of the user making the comment
         const { text } = req.body;
-        const authorId = req.id;
 
+        // Fetch the user making the comment
         const user = await User.findById(authorId);
 
         if (!user) {
             return res.status(400).json({ message: 'User not found' });
-          }
+        }
 
-        if (!text) return res.status(400).json({ message: 'Text is required', success: false });
+        if (!text) {
+            return res.status(400).json({ message: 'Text is required', success: false });
+        }
 
+        // Create the comment
         const comment = await Comment.create({
-            userName: User.userName,
+            userName: user.userName,  // Correct reference to userName
             text,
-            author: commentKrneWalaUserKiId,
-            post: postId
+            author: authorId,         // Comment author
+            post: postId              // Associated post
         });
 
- 
-          await comment.populate({
+        // Populate the author field with userName and profilePicture
+        await comment.populate({
             path: 'author',
             select: 'userName profilePicture'
         });
 
+        // Find the post and push the comment to its comments array
         const post = await Post.findById(postId);
         post.comments.push(comment._id);
         await post.save();
@@ -219,10 +223,11 @@ export const addComment = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error('Error in addComment:', error);
         return res.status(500).json({ message: 'Server error', success: false });
     }
 };
+
 
 // Get comments of a post
 export const getCommentsOfPost = async (req, res) => {
