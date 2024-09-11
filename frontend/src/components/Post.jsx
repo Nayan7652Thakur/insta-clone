@@ -61,7 +61,8 @@ const Post = ({ post }) => {
     const deletePost = async () => {
         try {
             const res = await fetch(`http://localhost:8000/api/v2/post/delete/${post._id}`, {
-                method: 'DELETE',
+                method: 'delete',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -173,7 +174,7 @@ const Post = ({ post }) => {
 
             <p>
                 <span className='font-medium mr-2'>
-                    {post.author?.userName || 'Anonymous'}
+                {post.author?.userName}
                 </span>
                 {post.caption}
             </p>

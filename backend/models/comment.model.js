@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema({
+    userName: {
+        type: String,
+        required: true, 
+      },
     text: {
         type: String,
         required: true

@@ -6,6 +6,8 @@ import cloudinary from "../utils/cloudinary.js";
 import { Post } from "../models/post.model.js";
 
 export const register = async (req, res) => {
+
+    console.log(User);
     try {
         const { userName, email, password } = req.body;
 

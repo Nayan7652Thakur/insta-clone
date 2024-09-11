@@ -185,10 +185,18 @@ export const addComment = async (req, res) => {
         const postId = req.params.id;
         const commentKrneWalaUserKiId = req.id;
         const { text } = req.body;
+        const authorId = req.id;
+
+        const user = await User.findById(authorId);
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+          }
 
         if (!text) return res.status(400).json({ message: 'Text is required', success: false });
 
         const comment = await Comment.create({
+            userName: User.userName,
             text,
             author: commentKrneWalaUserKiId,
             post: postId
