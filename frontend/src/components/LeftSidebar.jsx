@@ -20,7 +20,7 @@ const LeftSidebar = () => {
     const logoutHandler = async () => {
         try {
             const res = await fetch('http://localhost:8000/api/v2/user/logout', {
-                method: 'get',
+                method: 'POST',
                 credentials: 'include',
             });
 

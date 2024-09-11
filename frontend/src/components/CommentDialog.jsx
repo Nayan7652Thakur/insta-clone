@@ -4,12 +4,15 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Link } from 'react-router-dom';
 import { MoreHorizontal } from 'lucide-react';
 import { Button } from './ui/button';
+import { useSelector } from 'react-redux';
+import Comment from './Comment';
 
 const CommentDialog = ({ open, setOpen }) => {
 
+
+const {selectedPost} = useSelector(store => store.post)
+
   const [text, setText] = useState("");
-
-
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
 
@@ -21,9 +24,9 @@ const CommentDialog = ({ open, setOpen }) => {
   }
 
 
-const sendMessageHandler =async () =>{
-alert(text)
-}
+  const sendMessageHandler = async () => {
+    alert(text)
+  }
 
 
   return (
@@ -32,7 +35,7 @@ alert(text)
         <div className='flex flex-1'>
           <div className='w-1/2'>
             <img
-              src="https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg"
+              src={selectedPost?.image}
               alt="Comment Image"
               className='w-full h-full object-cover rounded-lg'
             />
@@ -43,12 +46,12 @@ alert(text)
               <div className='flex gap-3 items-center'>
                 <Link>
                   <Avatar>
-                    <AvatarImage />
+                    <AvatarImage src={selectedPost?.author?.profilePicture}/>
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </Link>
                 <div>
-                  <Link className='font-semibold text-xs'>username</Link>
+                  <Link className='font-semibold text-xs'>{selectedPost?.author?.userName}</Link>
                   {/* <span className='text-gray-600 text-sm'>Bio here</span> */}
                 </div>
               </div>
@@ -69,13 +72,11 @@ alert(text)
             </div>
             <hr />
             <div className='flex-1 overflow-y-auto max-h-96 p-4'>
+              {
+                selectedPost?.comments.map((comment) => <Comment key={comment._id} comment={comment}/>)
+              }
               comments here
-              comments here
-              comments here
-              comments here
-              comments here
-              comments here
-              comments here
+             
             </div>
             <div className='p-4'>
               <div className='flex items-center gap-2'>

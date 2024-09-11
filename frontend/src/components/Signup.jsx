@@ -24,12 +24,12 @@ const Signup = () => {
 
     const signupHandler = async (e) => {
         e.preventDefault();
-
+    
         if (!input.userName || !input.email || !input.password) {
             toast.error('Please fill out all fields');
             return;
         }
-
+    
         try {
             setLoading(true);
             const res = await fetch('http://localhost:8000/api/v2/user/register', {
@@ -40,13 +40,11 @@ const Signup = () => {
                 credentials: 'include',
                 body: JSON.stringify(input)
             });
-
+    
             const data = await res.json();
-
+    
             if (res.ok) {
-                // Save user data to Redux store
                 dispatch(setAuthUser({ userName: input.userName, email: input.email }));
-                console.log(setAuthUser({userName: input.userName}))
                 navigate("/");
                 toast.success(data.message);
                 setInput({
@@ -64,6 +62,7 @@ const Signup = () => {
             setLoading(false);
         }
     };
+    
 
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
@@ -73,16 +72,37 @@ const Signup = () => {
                     <p className='text-sm text-center'>Signup to see photos & videos from friends</p>
                 </div>
                 <div>
-                    <span className='font-medium'>Username</span>
-                    <Input type='text' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='userName' value={input.userName} />
+                    <span className='font-medium'>UserName</span>
+                    <Input 
+                        type='text' 
+                        name='userName' 
+                        value={input.userName} 
+                        onChange={changeEventHandler} 
+                        className='focus-visible:ring-transparent my-2' 
+                        required 
+                    />
                 </div>
                 <div>
                     <span className='font-medium'>Email</span>
-                    <Input type='email' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='email' value={input.email} />
+                    <Input 
+                        type='email' 
+                        name='email' 
+                        value={input.email} 
+                        onChange={changeEventHandler} 
+                        className='focus-visible:ring-transparent my-2' 
+                        required 
+                    />
                 </div>
                 <div>
                     <span className='font-medium'>Password</span>
-                    <Input type='password' className='focus-visible:ring-transparent my-2' onChange={changeEventHandler} name='password' value={input.password} />
+                    <Input 
+                        type='password' 
+                        name='password' 
+                        value={input.password} 
+                        onChange={changeEventHandler} 
+                        className='focus-visible:ring-transparent my-2' 
+                        required 
+                    />
                 </div>
                 {
                     loading ? (
@@ -94,7 +114,9 @@ const Signup = () => {
                         <Button type='submit'>Signup</Button>
                     )
                 }
-                <span className='text-center'>Already have an account? <Link className='text-blue-600' to='/login'>Login</Link></span>
+                <span className='text-center'>
+                    Already have an account? <Link className='text-blue-600' to='/login'>Login</Link>
+                </span>
             </form>
         </div>
     );

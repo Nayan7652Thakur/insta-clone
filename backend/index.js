@@ -39,5 +39,5 @@ app.get('/', (req, res) => {
 // Start server
 app.listen(PORT, () => {
     connectDB();
-    console.log(`Server is listening at port ${PORT}`);
+    console.log(`Server is listening at port ${PORT}🚀`); 
 });

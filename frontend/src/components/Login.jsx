@@ -26,7 +26,6 @@ const Login = () => {
     const loginHandler = async (e) => {
         e.preventDefault();
 
-        // Ensure inputs are not empty
         if (!input.email || !input.password) {
             toast.error('Please fill out all fields');
             return;
@@ -46,7 +45,7 @@ const Login = () => {
             const data = await res.json();
 
             if (res.ok) {
-                dispatch(setAuthUser(data.user)); // Correct dispatch with 'data.user'
+                dispatch(setAuthUser(data.user));
                 navigate('/');
                 toast.success(data.message);
                 setInput({
@@ -58,7 +57,7 @@ const Login = () => {
             }
 
         } catch (error) {
-            console.log(error);
+            console.error('Login error:', error);
             toast.error('An error occurred. Please try again.');
         } finally {
             setLoading(false);
@@ -69,48 +68,46 @@ const Login = () => {
         <div className='flex items-center w-screen h-screen justify-center'>
             <form onSubmit={loginHandler} className='shadow-lg flex flex-col gap-5 p-8'>
                 <div className='my-4'>
-                    <h1 className='text-center font-bold text-xl'>
-                        LOGO
-                    </h1>
+                    <h1 className='text-center font-bold text-xl'>LOGO</h1>
                     <p className='text-sm text-center'>Login to see photos & videos from friends</p>
                 </div>
 
                 <div>
-                    <span className='font-medium'>
+                    <Label htmlFor='email' className='font-medium'>
                         Email
-                    </span>
+                    </Label>
                     <Input 
+                        id='email'
                         type='email' 
                         name='email'
-                        value={input.email} // Bind value to state
+                        value={input.email}
                         onChange={changeEventHandler} 
                         className='focus-visible:ring-transparent my-2' 
                     />
                 </div>
 
                 <div>
-                    <span className='font-medium'>
+                    <Label htmlFor='password' className='font-medium'>
                         Password
-                    </span>
+                    </Label>
                     <Input 
+                        id='password'
                         type='password' 
                         name='password'
-                        value={input.password} // Bind value to state
+                        value={input.password}
                         onChange={changeEventHandler} 
                         className='focus-visible:ring-transparent my-2' 
                     />
                 </div>
 
-                {
-                    loading ? (
-                        <Button disabled>
-                            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                            Checking email & password
-                        </Button>
-                    ) : (
-                        <Button type="submit">Login</Button>
-                    )
-                }
+                {loading ? (
+                    <Button disabled>
+                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                        Checking email & password
+                    </Button>
+                ) : (
+                    <Button type="submit">Login</Button>
+                )}
 
                 <span className='text-center'>
                     Don't have an account? 
