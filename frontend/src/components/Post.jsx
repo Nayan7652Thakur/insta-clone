@@ -128,8 +128,8 @@ const Post = ({ post }) => {
                         </AvatarFallback>
                     </Avatar>
                     <div className='flex items-center gap-3'>
-                    <h1>{post.author?.userName || 'Anonymous'}</h1> {/* Ensure you access the correct field */}
-                    { user?._id === post?.author?._id && <Badge variant='semi'> Web Creator </Badge> }
+                        <h1>{post.author?.userName || 'Anonymous'}</h1> {/* Ensure you access the correct field */}
+                        {user?._id === post?.author?._id && <Badge variant='semi'> Web Creator </Badge>}
 
                     </div>
                 </div>
