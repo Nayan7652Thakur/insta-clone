@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import store from '@/redux/store';
 import { setAuthUser } from '@/redux/authSlice';
 import CreatePost from './CreatePost';
+import { setPosts, setSelectedPost } from '@/redux/postSlice';
 
 
 const LeftSidebar = () => {
@@ -26,6 +27,8 @@ const LeftSidebar = () => {
 
             if (res.ok) {
                 dispatch(setAuthUser(null))
+                dispatch(setSelectedPost(null))
+                dispatch(setPosts([]))
                 navigate('/login');
                 toast.success('Logged out successfully');
             } else {

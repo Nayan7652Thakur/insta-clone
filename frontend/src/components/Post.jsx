@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { setPosts, setSelectedPost } from '@/redux/postSlice';
 import axios from 'axios';
+import { Badge } from './ui/badge';
 
 const Post = ({ post }) => {
     const { user } = useSelector(store => store.auth);
@@ -98,7 +99,7 @@ const Post = ({ post }) => {
 
             if (res.data.success) {
 
-                const updatedcommentData = [...comment, res.data.message]
+                const updatedcommentData = [...comment, res.data.comment]
                 setComment(updatedcommentData)
 
                 const updatedPostData = posts.map(p =>
@@ -126,7 +127,11 @@ const Post = ({ post }) => {
                             CN
                         </AvatarFallback>
                     </Avatar>
+                    <div className='flex items-center gap-3'>
                     <h1>{post.author?.userName || 'Anonymous'}</h1> {/* Ensure you access the correct field */}
+                    { user?._id === post?.author?._id && <Badge variant='semi'> Web Creator </Badge> }
+
+                    </div>
                 </div>
 
                 <Dialog>
@@ -178,12 +183,19 @@ const Post = ({ post }) => {
                 </span>
                 {post.caption}
             </p>
+
+{
+    comment.length > 0 && (
             <span onClick={() => {
                 dispatch(setSelectedPost(post))
                 setOpen(true)
             }} className='cursor-pointer text-sm text-gray-400'>
                 view all {comment.length} comments
             </span>
+
+    )
+}
+
             <CommentDialog open={open} setOpen={setOpen} />
             <div className='flex items-center justify-between'>
                 <input
