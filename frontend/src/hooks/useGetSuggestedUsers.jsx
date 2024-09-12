@@ -1,18 +1,18 @@
-import { setPosts } from "@/redux/postSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { setSuggestedUsers } from "@/redux/authSlice";
 
-const useGetAllPost = () => {
+const useGetSuggestedUsers = () => {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const controller = new AbortController(); // Create an AbortController instance
-        const fetchAllPost = async () => {
+        const fetchSuggestedUsers = async () => {
             setLoading(true); // Set loading state to true before fetch
             try {
-                const res = await fetch('http://localhost:8000/api/v2/post/all', {
+                const res = await fetch('http://localhost:8000/api/v2/user/suggested', {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -22,12 +22,12 @@ const useGetAllPost = () => {
                 });
 
                 if (!res.ok) {
-                    throw new Error('Failed to fetch posts');
+                    throw new Error('Failed to fetch suggested users');
                 }
 
                 const data = await res.json();
                 if (data.success) {
-                    dispatch(setPosts(data.posts));
+                    dispatch(setSuggestedUsers(data.users)); // Corrected to use data.users
                 } else {
                     setError(data.message);
                     console.error('Server error:', data.message);
@@ -42,14 +42,14 @@ const useGetAllPost = () => {
             }
         };
 
-        fetchAllPost();
+        fetchSuggestedUsers();
 
         return () => {
             controller.abort(); // Abort the fetch when component unmounts
         };
     }, [dispatch]);
 
-    return { loading, error }; // Optionally return loading and error states
+    return { loading, error }; // Return loading and error states
 };
 
-export default useGetAllPost;
+export default useGetSuggestedUsers;
