@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 const SuggestedUsers = () => {
-    const { suggestedUsers } = useSelector(store => store.auth); // Changed to camelCase
+    const { suggestedUsers, loading, error } = useSelector((store) => store.auth); // Corrected: suggestedUsers instead of SuggestedUsers
+    console.log(suggestedUsers); // Check if this logs the correct data
 
-    if (!suggestedUsers || suggestedUsers.length === 0) {
-        return <p className="text-sm text-gray-600">No suggested users at the moment.</p>; // Handle empty state
-    }
+    if (loading) return <p>Loading suggested users...</p>; // Handle loading state
+    if (error) return <p>Error loading suggested users: {error}</p>; // Handle error state
+    if (!suggestedUsers || suggestedUsers.length === 0) return <p>No suggested users available.</p>; // Handle empty array
 
     return (
         <div className='my-10'>
@@ -18,22 +19,20 @@ const SuggestedUsers = () => {
             </div>
 
             {suggestedUsers.map((user) => (
-                <div key={user._id} className='flex items-center gap-2 my-4'>
-                    <Link to={`/profile/${user?._id}`}>
-                        <Avatar>
-                            <AvatarImage src={user?.profilePicture || '/path/to/default-avatar.png'} alt="profile_picture" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                    </Link>
-                    <div>
-                        <h1 className='font-semibold text-sm'>
-                            <Link to={`/profile/${user?._id}`}>
-                                {user?.userName || 'Anonymous'}
-                            </Link>
-                        </h1>
-                        <span className='text-gray-600 text-xs'>
-                            {user?.bio || 'No bio available'}
-                        </span>
+                <div key={user._id}>
+                    <div className='flex items-center gap-2'>
+                        <Link to={`/profile/${user?._id}`}>
+                            <Avatar>
+                                <AvatarImage src={user?.profilePicture} alt="profile_picture" />
+                                <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                        </Link>
+                        <div>
+                            <h1 className='font-semibold text-sm'>
+                                <Link to={`/profile/${user?._id}`}>{user?.userName || 'Anonymous'}</Link>
+                            </h1>
+                            <span className='text-gray-600 text-sm'>{user?.bio || 'Bio here'}</span>
+                        </div>
                     </div>
                 </div>
             ))}

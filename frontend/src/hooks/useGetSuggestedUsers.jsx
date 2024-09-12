@@ -9,16 +9,14 @@ const useGetSuggestedUsers = () => {
 
     useEffect(() => {
         const controller = new AbortController(); // Create an AbortController instance
+        // Inside your useGetSuggestedUsers hook
         const fetchSuggestedUsers = async () => {
-            setLoading(true); // Set loading state to true before fetch
+            setLoading(true);
             try {
                 const res = await fetch('http://localhost:8000/api/v2/user/suggested', {
                     method: 'GET',
                     credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    signal: controller.signal // Attach the signal to fetch
+                    headers: { 'Content-Type': 'application/json' },
                 });
 
                 if (!res.ok) {
@@ -26,21 +24,21 @@ const useGetSuggestedUsers = () => {
                 }
 
                 const data = await res.json();
+                console.log('API Response:', data); // Check the API response here
                 if (data.success) {
-                    dispatch(setSuggestedUsers(data.users)); // Corrected to use data.users
+                    dispatch(setSuggestedUsers(data.users)); // Ensure this is the correct path in your response
                 } else {
                     setError(data.message);
                     console.error('Server error:', data.message);
                 }
             } catch (error) {
-                if (error.name !== 'AbortError') { // Ignore the abort error
-                    setError(error.message);
-                    console.error('Error:', error.message);
-                }
+                console.error('Error:', error.message);
+                setError(error.message);
             } finally {
-                setLoading(false); // Set loading to false after the fetch completes
+                setLoading(false);
             }
         };
+
 
         fetchSuggestedUsers();
 
