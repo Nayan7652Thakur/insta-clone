@@ -22,14 +22,14 @@ const Profile = () => {
   return (
     <div className='flex max-w-4xl justify-center mx-auto pl-10'>
       <div className='flex flex-col gap-20 p-8'>
-      </div>
-      <div className='grid grid-cols-2'>
-        <section className='flex items-center justify-center'>
-          <Avatar className='h-32 w-32'>
-            <AvatarImage src={userProfile?.profilePicture} alt="Profile photo" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-        </section>
+        <div className='grid grid-cols-2'>
+          <section className='flex items-center justify-center'>
+            <Avatar className='h-32 w-32'>
+              <AvatarImage src={userProfile?.profilePicture} alt="Profile photo" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </section>
+        </div>
       </div>
     </div>
   );
