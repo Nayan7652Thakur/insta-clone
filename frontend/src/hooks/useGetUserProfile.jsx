@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUserProfile } from "@/redux/authSlice"; // Action to set profile in Redux
+import { setUserProfile } from "@/redux/authSlice";
 
 const useGetUserProfile = (userId) => {
     const dispatch = useDispatch();
@@ -8,8 +8,6 @@ const useGetUserProfile = (userId) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const controller = new AbortController();
-        
         const fetchUserProfile = async () => {
             setLoading(true);
             try {
@@ -17,7 +15,6 @@ const useGetUserProfile = (userId) => {
                     method: 'GET',
                     credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
-                    signal: controller.signal,
                 });
 
                 if (!res.ok) {
@@ -25,10 +22,8 @@ const useGetUserProfile = (userId) => {
                 }
 
                 const data = await res.json();
-                console.log("Fetched user profile:", data); // Debug fetched data
-
                 if (data.success) {
-                    dispatch(setUserProfile(data.user)); // Dispatch to Redux
+                    dispatch(setUserProfile(data.user));
                 } else {
                     setError(data.message);
                     console.error('Server error:', data.message);
@@ -41,16 +36,11 @@ const useGetUserProfile = (userId) => {
             }
         };
 
-        if (userId) {
-            fetchUserProfile(); // Trigger fetch if userId is available
-        }
+        fetchUserProfile(); // Fetch without AbortController
 
-        return () => {
-            controller.abort(); // Clean up
-        };
     }, [userId, dispatch]);
 
-    return { loading, error }; // Return loading and error states
+    return { loading, error };
 };
 
 export default useGetUserProfile;

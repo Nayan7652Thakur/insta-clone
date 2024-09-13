@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
-    userName: { type: String, required: true },
+    // userName: { type: String, required: true },
     caption: { type: String, default: '' },
     image: { type: String, required: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -12,3 +12,4 @@ const postSchema = new mongoose.Schema({
 });
 
 export const Post = mongoose.model('Post', postSchema);
+
