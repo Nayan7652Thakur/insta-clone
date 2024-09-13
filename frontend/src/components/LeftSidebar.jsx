@@ -39,12 +39,14 @@ const LeftSidebar = () => {
             toast.error('An error occurred. Please try again.');
         }
     };
-        
+
     const sidebarHandler = (textType) => {
         if (textType === 'Logout') {
             logoutHandler();
         } else if (textType === 'Create') {
             setOpen(true)
+        } else if (textType === 'Profile') {
+            navigate(`/profile/${user?._id}`)
         }
     };
 
@@ -83,7 +85,7 @@ const LeftSidebar = () => {
                     ))}
                 </div>
             </div>
-            <CreatePost open={open} setOpen={setOpen}/>
+            <CreatePost open={open} setOpen={setOpen} />
         </div>
     );
 };

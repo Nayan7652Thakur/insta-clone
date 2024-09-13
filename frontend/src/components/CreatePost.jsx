@@ -13,7 +13,6 @@ const CreatePost = ({ open, setOpen }) => {
     const { user } = useSelector(store => store.auth);
     const { posts } = useSelector(store => store.post);
 
-    console.log(user);
 
     const imageRef = useRef();
     const [file, setFile] = useState("");

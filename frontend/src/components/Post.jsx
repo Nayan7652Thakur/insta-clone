@@ -15,7 +15,6 @@ const Post = ({ post }) => {
     const { user } = useSelector(store => store.auth);
     const { posts } = useSelector(store => store.post);
 
-    console.log(user);
 
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);

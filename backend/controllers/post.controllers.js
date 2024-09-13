@@ -17,7 +17,6 @@ export const addNewPost = async (req, res) => {
             return res.status(400).json({ message: 'User not found' });
         }
 
-        console.log('User:', user); // Debug: Ensure the user has a username
         if (!user.userName) {
             return res.status(400).json({ message: 'User does not have a username' });
         }

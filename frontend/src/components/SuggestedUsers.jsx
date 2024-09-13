@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 const SuggestedUsers = () => {
     const { suggestedUsers, loading, error } = useSelector((store) => store.auth); // Corrected: suggestedUsers instead of SuggestedUsers
-    console.log(suggestedUsers); // Check if this logs the correct data
+    
 
     if (loading) return <p>Loading suggested users...</p>; // Handle loading state
     if (error) return <p>Error loading suggested users: {error}</p>; // Handle error state
@@ -19,7 +19,7 @@ const SuggestedUsers = () => {
             </div>
 
             {suggestedUsers.map((user) => (
-                <div key={user._id}>
+                <div key={user._id} className='flex items-center justify-between my-5'>
                     <div className='flex items-center gap-2'>
                         <Link to={`/profile/${user?._id}`}>
                             <Avatar>
@@ -34,6 +34,7 @@ const SuggestedUsers = () => {
                             <span className='text-gray-600 text-sm'>{user?.bio || 'Bio here'}</span>
                         </div>
                     </div>
+                    <span className='text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#2d8bc9]'>Follow</span>
                 </div>
             ))}
         </div>
