@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useGetUserProfile from '@/hooks/useGetUserProfile';
 import { Button } from './ui/button';
@@ -16,10 +16,10 @@ const Profile = () => {
   const { loading, error } = useGetUserProfile(userId); // Pass userId to hook
 
 
-  const { userProfile } = useSelector(store => store.auth); // Get userProfile from Redux
+  const { userProfile, user } = useSelector(store => store.auth); // Get userProfile from Redux
 
-  const isLoggedInUserProfile = false;
-  const isFollowing = true;
+  const isLoggedInUserProfile = user?._id == userProfile?._id;
+  const isFollowing = false;
 
 
   const handleTabChange = (tab) => {
@@ -56,7 +56,9 @@ const Profile = () => {
                 {
                   isLoggedInUserProfile ? (
                     <>
+                    <Link to='/account/edit'>
                       <Button variant='secondary' className='hover:bg-gray-200 h-8'>Edit profile</Button>
+                    </Link>
                       <Button variant='secondary' className='hover:bg-gray-200 h-8'>view archive</Button>
                       <Button variant='secondary' className='hover:bg-gray-200 h-8'>Ad Tools</Button>
                     </>
@@ -125,7 +127,6 @@ const Profile = () => {
                     <img src={post.image} alt="postImage" className='rounded-sm my-2 w-full aspect-square object-cover' />
                     <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                       <div className='flex items-center text-white space-x-4'>
-
                         <button className='flex items-center gap-2 hover:text-gray-300'>
                           <Heart />
                           <span>
