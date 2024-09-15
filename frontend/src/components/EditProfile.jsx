@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { Button } from './ui/button'
 import { Textarea } from './ui/textarea'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
 
 const EditProfile = () => {
   const imageRef = useRef();
@@ -45,7 +46,26 @@ const EditProfile = () => {
           <h1 className='font-bold mb-2'>
             Gender
           </h1>
+
+          <Select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="apple">Male</SelectItem>
+                <SelectItem value="banana">Female</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
+
+<div>
+  <Button className='w-fit bg-[#0095F6] hover: bg-[#0b67a4]'>
+    Submit
+  </Button>
+</div>
+
       </section>
     </div>
   )
