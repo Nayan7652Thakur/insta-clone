@@ -18,7 +18,7 @@ router.route('/logout').post(logout); // Changed to POST
 router.route('/:id/profile').get(isAuthenticated, getProfile);
 
 // Edit user profile
-router.route('/profile/edit').put(isAuthenticated, upload.single('profilePhoto'), editProfile); // Changed to PUT
+router.route('/profile/edit').post(isAuthenticated, upload.single('profilePhoto'), editProfile); // Changed to PUT
 
 // Get suggested users
 router.route('/suggested').get(isAuthenticated, getSuggestedUsers);

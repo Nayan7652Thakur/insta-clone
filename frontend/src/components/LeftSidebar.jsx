@@ -43,21 +43,22 @@ const LeftSidebar = () => {
     const sidebarHandler = (textType) => {
         if (textType === 'Logout') {
             logoutHandler();
-        } else if (textType === 'Create') {
-            setOpen(true)
-        } else if (textType === 'Profile') {
-            navigate(`/profile/${user?._id}`)
-        } else if (textType === 'HOME') {
- navigate('/')
+        } else if (textType === "Create") {
+            setOpen(true);
+        } else if (textType === "Profile") {
+            navigate(`/profile/${user?._id}`);
+        } else if (textType === "Home") {
+            navigate("/");
         }
-    };
+    }
 
-    const sidebarItems = [
+
+   const sidebarItems = [
         { icon: <Home />, text: "Home" },
         { icon: <Search />, text: "Search" },
         { icon: <TrendingUp />, text: "Explore" },
         { icon: <MessageCircle />, text: "Messages" },
-        { icon: <Heart />, text: "Notification" },
+        { icon: <Heart />, text: "Notifications" },
         { icon: <PlusSquare />, text: "Create" },
         {
             icon: (
@@ -65,10 +66,11 @@ const LeftSidebar = () => {
                     <AvatarImage src={user?.profilePicture} alt="@shadcn" />
                     <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
-            ), text: "Profile"
+            ),
+            text: "Profile"
         },
-        { icon: <LogOut />, text: "Logout" }
-    ];
+        { icon: <LogOut />, text: "Logout" },
+    ]
 
     return (
         <div className='fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen'>
