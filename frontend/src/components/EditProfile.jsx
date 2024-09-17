@@ -52,7 +52,7 @@ const EditProfile = () => {
         withCredentials: true
       })
 
-      {console.log( res.data.user?.profilePicture)}
+      
       if (res.data.success) {
         const updatedUserData = {
           ...user,
