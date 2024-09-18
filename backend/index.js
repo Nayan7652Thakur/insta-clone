@@ -6,10 +6,10 @@ import connectDB from './utils/db.js';
 import userRoute from './routes/user.route.js';
 import postRoute from './routes/post.route.js';
 import messageRoute from './routes/message.route.js';
+import { app, server } from './socket/Socket.js';
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectDB();
     console.log(`Server is listening at port ${PORT}🚀`); 
 });

@@ -11,6 +11,8 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Default to local storage
+import socketSlice from "./socketSlice";
+import chatSlice from "./chatSlice";
 
 // Configuration for redux-persist
 const persistConfig = {
@@ -24,7 +26,9 @@ const persistConfig = {
 // Combine all reducers
 const rootReducer = combineReducers({
   auth: authSlice,
-  post: postSlice
+  post: postSlice,
+  socketio : socketSlice,
+chat : chatSlice
 });
 
 // Create a persisted reducer
