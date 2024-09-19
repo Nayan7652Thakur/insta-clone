@@ -49,6 +49,7 @@ function App() {
 
   const { user } = useSelector(store => store.auth)
   const dispatch = useDispatch()
+  const {socket} = useSelector(store => store.socketio)
 
 
   useEffect(() => {
@@ -70,11 +71,11 @@ function App() {
         dispatch(setSocket(null))
       }
 
-    } else {
-      socketio.close()
+    } else if(socket) {
+      socket?.close()
       dispatch(setSocket(null))
     }
-  }, [user.dispatch])
+  }, [user , dispatch])
 
 
   return (
