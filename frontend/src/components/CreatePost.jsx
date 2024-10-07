@@ -13,6 +13,7 @@ const CreatePost = ({ open, setOpen }) => {
     const { user } = useSelector(store => store.auth);
     const { posts } = useSelector(store => store.post);
 
+    console.log(posts);
 
     const imageRef = useRef();
     const [file, setFile] = useState("");
@@ -33,7 +34,7 @@ const CreatePost = ({ open, setOpen }) => {
 
     const createPostHandler = async (e) => {
         e.preventDefault();
-        
+    
         if (loading) return;
     
         const formData = new FormData();
@@ -56,8 +57,12 @@ const CreatePost = ({ open, setOpen }) => {
     
             const data = await res.json();
             setOpen(false);
-            dispatch(setPosts([data.post, ...posts]));
+            
+            // Add the new post to the local Redux state
+            dispatch(setPosts([data.post, ...posts])); // Ensure that the post is added at the top
             toast.success(data.message || 'Post created successfully');
+    
+            // Reset the form after post creation
             resetForm();
         } catch (error) {
             console.error('Error:', error);
@@ -77,64 +82,64 @@ const CreatePost = ({ open, setOpen }) => {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent onInteractOutside={() => setOpen(false)}>
-            <DialogHeader className="text-center font-semibold">
-                Create a New Post
-            </DialogHeader>
-            <div className="flex gap-3 items-center">
-                <Avatar>
-                    <AvatarImage src={user?.profilePicture || '/default-profile.png'} alt="Profile" />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <div>
-                <h1 className="font-semibold text-xs">{user?.userName || 'No UserName'}</h1>
-                    <span className="text-gray-600 text-xs">{user?.bio || 'No bio available'}</span>
+            <DialogContent onInteractOutside={() => setOpen(false)}>
+                <DialogHeader className="text-center font-semibold">
+                    Create a New Post
+                </DialogHeader>
+                <div className="flex gap-3 items-center">
+                    <Avatar>
+                        <AvatarImage src={user?.profilePicture || '/default-profile.png'} alt="Profile" />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h1 className="font-semibold text-xs">{user?.userName || 'No UserName'}</h1>
+                        <span className="text-gray-600 text-xs">{user?.bio || 'No bio available'}</span>
+                    </div>
                 </div>
-            </div>
-            <Textarea
-                className="focus-visible:ring-transparent border-none"
-                placeholder="Write a caption..."
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-            />
-            {imagePreview && (
-                <div className="w-full h-64 flex items-center justify-center">
-                    <img
-                        src={imagePreview}
-                        alt="preview"
-                        className="object-cover w-full h-full rounded-md"
-                    />
-                </div>
-            )}
-            <input ref={imageRef} type="file" className="hidden" onChange={fileChangeHandler} />
-            <Button
-                onClick={() => imageRef.current.click()}
-                className="w-fit mx-auto bg-[#0095F6] hover:bg-[#258bcf]"
-                aria-label="Select image from computer"
-            >
-                Select from computer
-            </Button>
-            {imagePreview && (
-                <div className="mt-4">
-                    {loading ? (
-                        <Button disabled className="flex items-center justify-center w-full">
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Loading...
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={createPostHandler}
-                            className="w-full"
-                            aria-label="Create post"
-                        >
-                            Post
-                        </Button>
-                    )}
-                </div>
-            )}
-        </DialogContent>
-    </Dialog>
-);
+                <Textarea
+                    className="focus-visible:ring-transparent border-none"
+                    placeholder="Write a caption..."
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                />
+                {imagePreview && (
+                    <div className="w-full h-64 flex items-center justify-center">
+                        <img
+                            src={imagePreview}
+                            alt="preview"
+                            className="object-cover w-full h-full rounded-md"
+                        />
+                    </div>
+                )}
+                <input ref={imageRef} type="file" className="hidden" onChange={fileChangeHandler} />
+                <Button
+                    onClick={() => imageRef.current.click()}
+                    className="w-fit mx-auto bg-[#0095F6] hover:bg-[#258bcf]"
+                    aria-label="Select image from computer"
+                >
+                    Select from computer
+                </Button>
+                {imagePreview && (
+                    <div className="mt-4">
+                        {loading ? (
+                            <Button disabled className="flex items-center justify-center w-full">
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Loading...
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={createPostHandler}
+                                className="w-full"
+                                aria-label="Create post"
+                            >
+                                Post
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </DialogContent>
+        </Dialog>
+    );
 };
 
 export default CreatePost;

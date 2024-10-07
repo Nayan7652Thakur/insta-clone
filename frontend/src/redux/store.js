@@ -13,6 +13,7 @@ import {
 import storage from 'redux-persist/lib/storage'; // Default to local storage
 import socketSlice from "./socketSlice";
 import chatSlice from "./chatSlice";
+import rtnSlice from "./rtnSlice";
 
 // Configuration for redux-persist
 const persistConfig = {
@@ -28,7 +29,8 @@ const rootReducer = combineReducers({
   auth: authSlice,
   post: postSlice,
   socketio : socketSlice,
-chat : chatSlice
+chat : chatSlice,
+realTimeNotification : rtnSlice 
 });
 
 // Create a persisted reducer

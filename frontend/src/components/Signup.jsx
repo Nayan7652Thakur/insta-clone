@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '@/redux/authSlice';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -15,6 +15,7 @@ const Signup = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const {user} = useSelector(store => store.auth)
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -63,6 +64,11 @@ const Signup = () => {
         }
     };
     
+    useEffect(() => {
+        if (user) {
+            navigate("/")
+        }
+    }, [])
 
     return (
         <div className='flex items-center w-screen h-screen justify-center'>

@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import CommentDialog from './CommentDialog';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { setPosts, setSelectedPost } from '@/redux/postSlice';
 import axios from 'axios';
 import { Badge } from './ui/badge';
@@ -116,6 +116,20 @@ const Post = ({ post }) => {
         }
     }
 
+
+    const bookmarkHandler = async() => {
+        try {
+            const res = await axios.get(`http://localhost:8000/api/v2/post/${post?._id}/bookmark` , {withCredentials:true})
+
+if (res.data.success) {
+    toast.success(res.data.message)
+}
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className='my-8 w-full max-w-sm mx-auto'>
             <div className='flex items-center justify-between'>
@@ -138,9 +152,12 @@ const Post = ({ post }) => {
                         <MoreHorizontal className='cursor-pointer' />
                     </DialogTrigger>
                     <DialogContent className='flex flex-col items-center text-sm text-center'>
-                        <Button variant='ghost' className='cursor-pointer w-fit text-[#ED4956] font-bold'>
+                        {
+                            post?.author?._id === post.author._id &&   <Button variant='ghost' className='cursor-pointer w-fit text-[#ED4956] font-bold'>
                             Unfollow
                         </Button>
+                        }
+                      
                         <Button variant='ghost' className='cursor-pointer w-fit'>
                             Add to favorite
                         </Button>
@@ -170,7 +187,7 @@ const Post = ({ post }) => {
                     }} />
                     <Send className='cursor-pointer hover:text-gray-600' />
                 </div>
-                <Bookmark className='cursor-pointer hover:text-gray-600' />
+                <Bookmark onClick={bookmarkHandler} className='cursor-pointer hover:text-gray-600' />
             </div>
             <span className='font-medium block mb-2'>
                 {postLike} likes

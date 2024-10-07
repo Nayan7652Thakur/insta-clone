@@ -1,11 +1,11 @@
 import { Label } from '@radix-ui/react-label';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '@/redux/authSlice';
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
     });
 
     const [loading, setLoading] = useState(false);
-
+    const { user } = useSelector(store => store.auth)
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -64,6 +64,13 @@ const Login = () => {
         }
     };
 
+
+    useEffect(() => {
+        if (user) {
+            navigate("/")
+        }
+    }, [])
+
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
             <form onSubmit={loginHandler} className='shadow-lg flex flex-col gap-5 p-8'>
@@ -76,13 +83,13 @@ const Login = () => {
                     <Label htmlFor='email' className='font-medium'>
                         Email
                     </Label>
-                    <Input 
+                    <Input
                         id='email'
-                        type='email' 
+                        type='email'
                         name='email'
                         value={input.email}
-                        onChange={changeEventHandler} 
-                        className='focus-visible:ring-transparent my-2' 
+                        onChange={changeEventHandler}
+                        className='focus-visible:ring-transparent my-2'
                     />
                 </div>
 
@@ -90,13 +97,13 @@ const Login = () => {
                     <Label htmlFor='password' className='font-medium'>
                         Password
                     </Label>
-                    <Input 
+                    <Input
                         id='password'
-                        type='password' 
+                        type='password'
                         name='password'
                         value={input.password}
-                        onChange={changeEventHandler} 
-                        className='focus-visible:ring-transparent my-2' 
+                        onChange={changeEventHandler}
+                        className='focus-visible:ring-transparent my-2'
                     />
                 </div>
 
@@ -110,7 +117,7 @@ const Login = () => {
                 )}
 
                 <span className='text-center'>
-                    Don't have an account? 
+                    Don't have an account?
                     <Link className='text-blue-600' to='/signup'> Signup</Link>
                 </span>
             </form>

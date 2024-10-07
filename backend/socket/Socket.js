@@ -3,7 +3,6 @@ import express from 'express';
 import http from "http";
 
 const app = express();
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -15,7 +14,6 @@ const io = new Server(server, {
 
 const userSocketMap = {};
 
-// Corrected this line by using square brackets to access the value in the object.
 export const getReceiverSocketId = (receiverId) => userSocketMap[receiverId];
 
 io.on('connection', (socket) => {
@@ -24,16 +22,18 @@ io.on('connection', (socket) => {
     if (userId) {
         userSocketMap[userId] = socket.id;
         console.log(`User connected: userId = ${userId}, socketId = ${socket.id}`);
+    } else {
+        console.error('User ID not found in socket connection');
     }
 
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
     socket.on('disconnect', () => {
         if (userId) {
-            console.log(`User Disconnect: userId = ${userId}, socketId = ${socket.id}`);
+            console.log(`User Disconnected: userId = ${userId}, socketId = ${socket.id}`);
             delete userSocketMap[userId];
+            io.emit('getOnlineUsers', Object.keys(userSocketMap));
         }
-        io.emit('getOnlineUsers', Object.keys(userSocketMap));
     });
 });
 
